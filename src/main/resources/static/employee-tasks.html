@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>My Tasks | ContractPro</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="layout">
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            Contract<span>Pro</span>
+        </div>
+
+
+        <div class="nav">
+
+            <a href="employee-dashboard.html">
+                📊 Dashboard
+            </a>
+
+            <a class="active" href="employee-tasks.html">
+                ✅ My Tasks
+            </a>
+
+            <a href="#" onclick="logout()" class="logout">
+                🚪 Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div>
+
+                <h1>
+                    My Tasks
+                </h1>
+
+                <p>
+                    View your assigned work and update your progress.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================= INFORMATION ================= -->
+
+        <div class="section">
+
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Assigned Tasks
+                    </h2>
+
+                    <p>
+                        Start your tasks when you begin working on them.
+                    </p>
+
+                </div>
+
+
+                <input
+                    class="search"
+                    id="search"
+                    type="text"
+                    placeholder="Search tasks..."
+                    onkeyup="filterTasks()"
+                >
+
+            </div>
+
+
+
+            <!-- TABLE -->
+
+            <div class="table-wrapper">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Task
+                            </th>
+
+                            <th>
+                                Contract
+                            </th>
+
+                            <th>
+                                Description
+                            </th>
+
+                            <th>
+                                Deadline
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="taskTable">
+
+                        <tr>
+
+                            <td
+                                colspan="6"
+                                style="
+                                    text-align:center;
+                                    padding:30px;
+                                ">
+
+                                Loading your tasks...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================= NOTE ================= -->
+
+        <div class="section">
+
+
+            <h2>
+                Task Workflow
+            </h2>
+
+
+            <p>
+
+                <strong>PENDING</strong>
+                → Task has been assigned to you.
+
+            </p>
+
+
+            <p>
+
+                <strong>IN PROGRESS</strong>
+                → You have started working on the task.
+
+            </p>
+
+
+            <p>
+
+                <strong>COMPLETED</strong>
+                → Your manager has reviewed and approved the work.
+
+            </p>
+
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+
+
+<script src="script.js"></script>
+
+
+<script>
+
+
+/* =====================================================
+   PAGE PROTECTION
+===================================================== */
+
+protectPage("EMPLOYEE");
+
+
+
+let tasks = [];
+
+
+
+/* =====================================================
+   LOAD MY TASKS
+===================================================== */
+
+async function loadTasks() {
+
+
+    try {
+
+
+        const userId =
+            getUserId();
+
+
+        if (!userId) {
+
+            window.location.href =
+                "index.html";
+
+            return;
+
+        }
+
+
+
+        const response =
+            await fetch(
+                API +
+                "/tasks/employee/" +
+                userId
+            );
+
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load tasks"
+            );
+
+        }
+
+
+
+        tasks =
+            await response.json();
+
+
+        displayTasks(tasks);
+
+
+    } catch (error) {
+
+
+        console.error(
+            "Task loading error:",
+            error
+        );
+
+
+        document
+            .getElementById("taskTable")
+            .innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        style="
+                            text-align:center;
+                            padding:30px;
+                        ">
+
+                        Unable to load your tasks.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+    }
+
+}
+
+
+
+/* =====================================================
+   DISPLAY TASKS
+===================================================== */
+
+function displayTasks(data) {
+
+
+    const table =
+        document.getElementById(
+            "taskTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+
+    if (data.length === 0) {
+
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    style="
+                        text-align:center;
+                        padding:40px;
+                    ">
+
+                    🎉 No tasks assigned to you.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
+
+
+
+    data.forEach(task => {
+
+
+        let action = "";
+
+
+
+        /* Employee can start pending tasks */
+
+        if (task.status === "PENDING") {
+
+
+            action = `
+
+                <button
+                    class="btn"
+                    onclick="
+                        startTask(${task.taskId})
+                    ">
+
+                    ▶ Start Task
+
+                </button>
+
+            `;
+
+
+        }
+
+
+
+        /* In progress */
+
+        else if (
+            task.status === "IN PROGRESS"
+        ) {
+
+
+            action = `
+
+                <span style="
+                    color:#2563eb;
+                    font-weight:600;
+                ">
+
+                    Working...
+
+                </span>
+
+            `;
+
+        }
+
+
+
+        /* Completed */
+
+        else if (
+            task.status === "COMPLETED"
+        ) {
+
+
+            action = `
+
+                <span style="
+                    color:#16a34a;
+                    font-weight:600;
+                ">
+
+                    ✓ Approved
+
+                </span>
+
+            `;
+
+        }
+
+
+
+        table.innerHTML += `
+
+            <tr>
+
+
+                <!-- TASK -->
+
+                <td>
+
+                    <strong>
+                        ${task.taskName}
+                    </strong>
+
+                </td>
+
+
+
+                <!-- CONTRACT -->
+
+                <td>
+
+                    ${
+                        task.contract
+                        ? task.contract.contractTitle
+                        : "N/A"
+                    }
+
+                </td>
+
+
+
+                <!-- DESCRIPTION -->
+
+                <td>
+
+                    ${
+                        task.description
+                        || "No description"
+                    }
+
+                </td>
+
+
+
+                <!-- DEADLINE -->
+
+                <td>
+
+                    ${task.deadline}
+
+                </td>
+
+
+
+                <!-- STATUS -->
+
+                <td>
+
+                    ${statusBadge(task.status)}
+
+                </td>
+
+
+
+                <!-- ACTION -->
+
+                <td>
+
+                    ${action}
+
+                </td>
+
+
+            </tr>
+
+        `;
+
+    });
+
+}
+
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+function filterTasks() {
+
+
+    const value =
+        document
+        .getElementById("search")
+        .value
+        .toLowerCase()
+        .trim();
+
+
+
+    const filtered =
+        tasks.filter(task => {
+
+
+            const taskName =
+                (
+                    task.taskName || ""
+                ).toLowerCase();
+
+
+            const contractName =
+                task.contract
+                ? (
+                    task.contract.contractTitle || ""
+                ).toLowerCase()
+                : "";
+
+
+            const description =
+                (
+                    task.description || ""
+                ).toLowerCase();
+
+
+            return (
+
+                taskName.includes(value)
+
+                ||
+
+                contractName.includes(value)
+
+                ||
+
+                description.includes(value)
+
+            );
+
+        });
+
+
+    displayTasks(filtered);
+
+}
+
+
+
+/* =====================================================
+   START TASK
+===================================================== */
+
+async function startTask(taskId) {
+
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                API +
+                "/tasks/" +
+                taskId +
+                "/status?status=IN%20PROGRESS",
+
+                {
+
+                    method: "PUT",
+
+                    headers: authHeaders()
+
+                }
+
+            );
+
+
+
+        if (response.ok) {
+
+
+            showToast(
+                "Task started successfully"
+            );
+
+
+            await loadTasks();
+
+
+        } else {
+
+
+            const message =
+                await response.text();
+
+
+            showToast(
+                message ||
+                "Unable to start task",
+                false
+            );
+
+
+            await loadTasks();
+
+        }
+
+
+    } catch (error) {
+
+
+        console.error(error);
+
+
+        showToast(
+            "Server error while starting task",
+            false
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   INITIAL LOAD
+===================================================== */
+
+loadTasks();
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Task Management | ContractPro</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="layout">
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+    <div class="brand">
+        Contract<span>Pro</span>
+    </div>
+
+
+    <div class="nav">
+
+        <a href="manager-dashboard.html">
+            📊 Dashboard
+        </a>
+
+        <a href="companies.html">
+            🏢 Companies
+        </a>
+
+        <a href="contracts.html">
+            📄 Contracts
+        </a>
+
+        <a href="employees.html">
+            👥 Employees
+        </a>
+
+        <a href="assign-employees.html">
+            🔗 Assign Employees
+        </a>
+
+        <a class="active" href="tasks.html">
+            ✅ Tasks
+        </a>
+
+        <a href="#" onclick="logout()" class="logout">
+            🚪 Logout
+        </a>
+
+    </div>
+
+</aside>
+
+
+
+<!-- ================= MAIN CONTENT ================= -->
+
+<main class="main">
+
+
+<!-- TOP BAR -->
+
+<div class="topbar">
+
+    <div>
+
+        <h1>Task Management</h1>
+
+        <p>
+            Assign work to employees and monitor task progress.
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= ASSIGN TASK ================= -->
+
+<div class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>Assign New Task</h2>
+
+            <p>
+                Create and assign a task to an employee working on a contract.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <form onsubmit="addTask(event)">
+
+
+        <div class="form-grid">
+
+
+            <!-- CONTRACT -->
+
+            <div class="form-group">
+
+                <label>
+                    Contract *
+                </label>
+
+                <select id="contractId" required>
+
+                    <option value="">
+                        Select contract
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- EMPLOYEE -->
+
+            <div class="form-group">
+
+                <label>
+                    Employee *
+                </label>
+
+                <select id="employeeId" required>
+
+                    <option value="">
+                        Select employee
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- TASK NAME -->
+
+            <div class="form-group">
+
+                <label>
+                    Task Name *
+                </label>
+
+                <input
+                    id="taskName"
+                    type="text"
+                    placeholder="Enter task name"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- DEADLINE -->
+
+            <div class="form-group">
+
+                <label>
+                    Deadline *
+                </label>
+
+                <input
+                    id="deadline"
+                    type="date"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- STATUS -->
+
+            <div class="form-group">
+
+                <label>
+                    Initial Status
+                </label>
+
+                <select id="taskStatus">
+
+                    <option value="PENDING">
+                        PENDING
+                    </option>
+
+                    <option value="IN PROGRESS">
+                        IN PROGRESS
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="form-group full">
+
+                <label>
+                    Task Description
+                </label>
+
+                <textarea
+                    id="description"
+                    rows="4"
+                    placeholder="Describe the work that needs to be completed..."
+                ></textarea>
+
+            </div>
+
+
+        </div>
+
+
+        <br>
+
+
+        <button
+            type="submit"
+            class="btn"
+        >
+            + Assign Task
+        </button>
+
+
+    </form>
+
+</div>
+
+
+
+<!-- ================= ALL TASKS ================= -->
+
+<div class="section">
+
+
+    <div class="section-header">
+
+
+        <div>
+
+            <h2>All Tasks</h2>
+
+            <p>
+                View and manage the progress of all assigned tasks.
+            </p>
+
+        </div>
+
+
+        <input
+            class="search"
+            id="search"
+            placeholder="Search tasks..."
+            onkeyup="filterTasks()"
+        >
+
+
+    </div>
+
+
+
+    <div class="table-wrapper">
+
+
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+                    <th>Task</th>
+
+                    <th>Contract</th>
+
+                    <th>Employee</th>
+
+                    <th>Deadline</th>
+
+                    <th>Status</th>
+
+                    <th>Update</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="taskTable"></tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</div>
+
+
+
+</main>
+
+
+</div>
+
+
+
+<script src="script.js"></script>
+
+
+<script>
+
+
+/* =====================================================
+   PAGE PROTECTION
+===================================================== */
+
+protectPage("MANAGER");
+
+
+
+let tasks = [];
+
+
+
+/* =====================================================
+   LOAD CONTRACTS
+===================================================== */
+
+async function loadContracts() {
+
+    try {
+
+        const response =
+            await fetch(API + "/contracts");
+
+
+        if (!response.ok) {
+
+            throw new Error("Unable to load contracts");
+
+        }
+
+
+        const contracts =
+            await response.json();
+
+
+        const select =
+            document.getElementById("contractId");
+
+
+        select.innerHTML =
+            `<option value="">Select contract</option>`;
+
+
+        contracts.forEach(c => {
+
+            select.innerHTML += `
+
+                <option value="${c.contractId}">
+
+                    ${c.contractTitle}
+
+                </option>
+
+            `;
+
+        });
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Unable to load contracts",
+            false
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   LOAD EMPLOYEES
+===================================================== */
+
+async function loadEmployees() {
+
+    try {
+
+        const response =
+            await fetch(API + "/users/employees");
+
+
+        if (!response.ok) {
+
+            throw new Error("Unable to load employees");
+
+        }
+
+
+        const employees =
+            await response.json();
+
+
+        const select =
+            document.getElementById("employeeId");
+
+
+        select.innerHTML =
+            `<option value="">Select employee</option>`;
+
+
+        employees.forEach(e => {
+
+            select.innerHTML += `
+
+                <option value="${e.userId}">
+
+                    ${e.name}
+                    -
+                    ${e.designation || "Employee"}
+
+                </option>
+
+            `;
+
+        });
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Unable to load employees",
+            false
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   LOAD ALL TASKS
+===================================================== */
+
+async function loadTasks() {
+
+    try {
+
+        const response =
+            await fetch(API + "/tasks");
+
+
+        if (!response.ok) {
+
+            throw new Error("Unable to load tasks");
+
+        }
+
+
+        tasks =
+            await response.json();
+
+
+        displayTasks(tasks);
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Unable to load tasks",
+            false
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   DISPLAY TASKS
+===================================================== */
+
+function displayTasks(data) {
+
+
+    const table =
+        document.getElementById("taskTable");
+
+
+    table.innerHTML = "";
+
+
+    if (data.length === 0) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td colspan="6"
+                    style="text-align:center; padding:30px;">
+
+                    No tasks found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    data.forEach(t => {
+
+
+        table.innerHTML += `
+
+        <tr>
+
+
+            <!-- TASK -->
+
+            <td>
+
+                <strong>
+                    ${t.taskName}
+                </strong>
+
+                <br>
+
+                <small>
+
+                    ${t.description || "No description"}
+
+                </small>
+
+            </td>
+
+
+
+            <!-- CONTRACT -->
+
+            <td>
+
+                ${t.contract
+                    ? t.contract.contractTitle
+                    : "N/A"}
+
+            </td>
+
+
+
+            <!-- EMPLOYEE -->
+
+            <td>
+
+                ${t.employee
+                    ? t.employee.name
+                    : "N/A"}
+
+            </td>
+
+
+
+            <!-- DEADLINE -->
+
+            <td>
+
+                ${t.deadline}
+
+            </td>
+
+
+
+            <!-- STATUS -->
+
+            <td>
+
+                ${statusBadge(t.status)}
+
+            </td>
+
+
+
+            <!-- UPDATE -->
+
+            <td>
+
+                <select
+                    onchange="changeTaskStatus(${t.taskId}, this.value)"
+                >
+
+                    <option value="PENDING"
+                        ${t.status === "PENDING"
+                            ? "selected"
+                            : ""}>
+
+                        PENDING
+
+                    </option>
+
+
+                    <option value="IN PROGRESS"
+                        ${t.status === "IN PROGRESS"
+                            ? "selected"
+                            : ""}>
+
+                        IN PROGRESS
+
+                    </option>
+
+
+                    <option value="COMPLETED"
+                        ${t.status === "COMPLETED"
+                            ? "selected"
+                            : ""}>
+
+                        COMPLETED
+
+                    </option>
+
+                </select>
+
+            </td>
+
+
+        </tr>
+
+        `;
+
+    });
+
+}
+
+
+
+/* =====================================================
+   SEARCH TASKS
+===================================================== */
+
+function filterTasks() {
+
+
+    const value =
+        document
+        .getElementById("search")
+        .value
+        .toLowerCase();
+
+
+    const filtered =
+        tasks.filter(t => {
+
+
+            const taskName =
+                (t.taskName || "")
+                .toLowerCase();
+
+
+            const employeeName =
+                t.employee
+                ? (t.employee.name || "").toLowerCase()
+                : "";
+
+
+            const contractName =
+                t.contract
+                ? (t.contract.contractTitle || "").toLowerCase()
+                : "";
+
+
+            return (
+
+                taskName.includes(value)
+
+                ||
+
+                employeeName.includes(value)
+
+                ||
+
+                contractName.includes(value)
+
+            );
+
+        });
+
+
+    displayTasks(filtered);
+
+}
+
+
+
+/* =====================================================
+   ADD NEW TASK
+===================================================== */
+
+async function addTask(event) {
+
+
+    event.preventDefault();
+
+
+
+    const contractId =
+        document
+        .getElementById("contractId")
+        .value;
+
+
+    const employeeId =
+        document
+        .getElementById("employeeId")
+        .value;
+
+
+    const taskName =
+        document
+        .getElementById("taskName")
+        .value
+        .trim();
+
+
+    const deadline =
+        document
+        .getElementById("deadline")
+        .value;
+
+
+    const description =
+        document
+        .getElementById("description")
+        .value
+        .trim();
+
+
+    const status =
+        document
+        .getElementById("taskStatus")
+        .value;
+
+
+
+    if (!contractId || !employeeId || !taskName || !deadline) {
+
+        showToast(
+            "Please fill all required fields",
+            false
+        );
+
+        return;
+
+    }
+
+
+
+    const task = {
+
+
+        contract: {
+
+            contractId:
+                Number(contractId)
+
+        },
+
+
+        employee: {
+
+            userId:
+                Number(employeeId)
+
+        },
+
+
+        taskName:
+            taskName,
+
+
+        description:
+            description,
+
+
+        deadline:
+            deadline,
+
+
+        status:
+            status
+
+    };
+
+
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                API + "/tasks",
+
+                {
+
+                    method: "POST",
+
+                    headers: authHeaders(),
+
+                    body:
+                        JSON.stringify(task)
+
+                }
+
+            );
+
+
+
+        if (response.ok) {
+
+
+            showToast(
+                "Task assigned successfully"
+            );
+
+
+            event.target.reset();
+
+
+            await loadTasks();
+
+
+        } else {
+
+
+            const message =
+                await response.text();
+
+
+            showToast(
+                message || "Unable to assign task",
+                false
+            );
+
+        }
+
+
+    } catch (error) {
+
+
+        console.error(error);
+
+
+        showToast(
+            "Server error while assigning task",
+            false
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   CHANGE TASK STATUS
+===================================================== */
+
+async function changeTaskStatus(taskId, status) {
+
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                API +
+                "/tasks/" +
+                taskId +
+                "/status?status=" +
+                encodeURIComponent(status),
+
+                {
+
+                    method: "PUT",
+
+                    headers: authHeaders()
+
+                }
+
+            );
+
+
+
+        if (response.ok) {
+
+
+            showToast(
+                "Task status updated successfully"
+            );
+
+
+            await loadTasks();
+
+
+        } else {
+
+
+            const message =
+                await response.text();
+
+
+            showToast(
+                message || "Unable to update task",
+                false
+            );
+
+
+            await loadTasks();
+
+        }
+
+
+    } catch (error) {
+
+
+        console.error(error);
+
+
+        showToast(
+            "Server error while updating task",
+            false
+        );
+
+
+        await loadTasks();
+
+    }
+
+}
+
+
+
+/* =====================================================
+   INITIAL LOAD
+===================================================== */
+
+loadContracts();
+
+loadEmployees();
+
+loadTasks();
+
+
+</script>
+
+
+</body>
+
+</html>

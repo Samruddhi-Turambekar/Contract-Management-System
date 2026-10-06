@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Employees | ContractPro</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="layout">
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            Contract<span>Pro</span>
+        </div>
+
+
+        <div class="nav">
+
+            <a href="manager-dashboard.html">
+                📊 Dashboard
+            </a>
+
+            <a href="companies.html">
+                🏢 Companies
+            </a>
+
+            <a href="contracts.html">
+                📄 Contracts
+            </a>
+
+            <a class="active" href="employees.html">
+                👥 Employees
+            </a>
+
+            <a href="assign-employees.html">
+                🔗 Assign Employees
+            </a>
+
+            <a href="tasks.html">
+                ✅ Tasks
+            </a>
+
+            <a href="#" onclick="logout()" class="logout">
+                🚪 Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div>
+
+                <h1>Employee Management</h1>
+
+                <p>
+                    View and manage employees working on contracts.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================= EMPLOYEE SUMMARY ================= -->
+
+        <div class="cards">
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    👥
+                </div>
+
+                <h3>Total Employees</h3>
+
+                <div
+                    class="card-number"
+                    id="employeeCount">
+                    0
+                </div>
+
+                <p>
+                    Registered employees
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================= EMPLOYEE TABLE ================= -->
+
+        <div class="section">
+
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>All Employees</h2>
+
+                    <p>
+                        Employee details and contact information.
+                    </p>
+
+                </div>
+
+
+                <input
+                    class="search"
+                    id="search"
+                    type="text"
+                    placeholder="Search employees..."
+                    onkeyup="filterEmployees()"
+                >
+
+            </div>
+
+
+
+            <div class="table-wrapper">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Employee</th>
+
+                            <th>Email</th>
+
+                            <th>Designation</th>
+
+                            <th>Phone</th>
+
+                            <th>Role</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="employeeTable">
+
+                        <tr>
+
+                            <td
+                                colspan="6"
+                                style="text-align:center; padding:30px;">
+
+                                Loading employees...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+
+
+<script src="script.js"></script>
+
+
+<script>
+
+
+/* =====================================================
+   PAGE PROTECTION
+===================================================== */
+
+protectPage("MANAGER");
+
+
+
+let employees = [];
+
+
+
+/* =====================================================
+   LOAD EMPLOYEES
+===================================================== */
+
+async function loadEmployees() {
+
+
+    try {
+
+
+        const response =
+            await fetch(API + "/users/employees");
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load employees"
+            );
+
+        }
+
+
+        employees =
+            await response.json();
+
+
+        document
+            .getElementById("employeeCount")
+            .innerText =
+            employees.length;
+
+
+        displayEmployees(employees);
+
+
+    } catch (error) {
+
+
+        console.error(error);
+
+
+        document
+            .getElementById("employeeTable")
+            .innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        style="text-align:center; padding:30px;">
+
+                        Unable to load employees.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+        showToast(
+            "Unable to load employees",
+            false
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   DISPLAY EMPLOYEES
+===================================================== */
+
+function displayEmployees(data) {
+
+
+    const table =
+        document.getElementById(
+            "employeeTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+    if (data.length === 0) {
+
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    style="text-align:center; padding:30px;">
+
+                    No employees found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
+
+
+
+    data.forEach(employee => {
+
+
+        table.innerHTML += `
+
+            <tr>
+
+
+                <td>
+
+                    ${employee.userId}
+
+                </td>
+
+
+
+                <td>
+
+                    <strong>
+                        ${employee.name || "N/A"}
+                    </strong>
+
+                </td>
+
+
+
+                <td>
+
+                    ${employee.email || "N/A"}
+
+                </td>
+
+
+
+                <td>
+
+                    ${employee.designation || "Employee"}
+
+                </td>
+
+
+
+                <td>
+
+                    ${employee.phone || "N/A"}
+
+                </td>
+
+
+
+                <td>
+
+                    ${statusBadge(employee.role)}
+
+                </td>
+
+
+            </tr>
+
+        `;
+
+    });
+
+}
+
+
+
+/* =====================================================
+   SEARCH EMPLOYEES
+===================================================== */
+
+function filterEmployees() {
+
+
+    const value =
+        document
+        .getElementById("search")
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const filtered =
+        employees.filter(employee => {
+
+
+            const name =
+                (employee.name || "")
+                .toLowerCase();
+
+
+            const email =
+                (employee.email || "")
+                .toLowerCase();
+
+
+            const designation =
+                (employee.designation || "")
+                .toLowerCase();
+
+
+            const phone =
+                (employee.phone || "")
+                .toLowerCase();
+
+
+            return (
+
+                name.includes(value)
+
+                ||
+
+                email.includes(value)
+
+                ||
+
+                designation.includes(value)
+
+                ||
+
+                phone.includes(value)
+
+            );
+
+        });
+
+
+    displayEmployees(filtered);
+
+}
+
+
+
+/* =====================================================
+   LOAD PAGE
+===================================================== */
+
+loadEmployees();
+
+
+</script>
+
+
+</body>
+
+</html>

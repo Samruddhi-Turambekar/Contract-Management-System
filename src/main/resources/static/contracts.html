@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Contracts | ContractPro</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="layout">
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            Contract<span>Pro</span>
+        </div>
+
+
+        <div class="nav">
+
+            <a href="manager-dashboard.html">
+                📊 Dashboard
+            </a>
+
+            <a href="companies.html">
+                🏢 Companies
+            </a>
+
+            <a class="active" href="contracts.html">
+                📄 Contracts
+            </a>
+
+            <a href="employees.html">
+                👥 Employees
+            </a>
+
+            <a href="assign-employees.html">
+                🔗 Assign Employees
+            </a>
+
+            <a href="tasks.html">
+                ✅ Tasks
+            </a>
+
+            <a href="#" onclick="logout()" class="logout">
+                🚪 Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div>
+
+                <h1>Contract Management</h1>
+
+                <p>
+                    Create, monitor and manage all company contracts.
+                </p>
+
+            </div>
+
+
+            <button
+                class="btn"
+                onclick="scrollToForm()">
+
+                + Add Contract
+
+            </button>
+
+        </div>
+
+
+
+        <!-- ================= SUMMARY CARDS ================= -->
+
+        <div class="cards">
+
+
+            <!-- TOTAL -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    📄
+                </div>
+
+                <h3>
+                    Total Contracts
+                </h3>
+
+                <div
+                    class="card-number"
+                    id="totalContracts">
+
+                    0
+
+                </div>
+
+                <p>
+                    Contracts in system
+                </p>
+
+            </div>
+
+
+
+            <!-- ACTIVE -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🟢
+                </div>
+
+                <h3>
+                    Active Contracts
+                </h3>
+
+                <div
+                    class="card-number"
+                    id="activeContracts">
+
+                    0
+
+                </div>
+
+                <p>
+                    Currently active
+                </p>
+
+            </div>
+
+
+
+            <!-- COMPLETED -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    ✔️
+                </div>
+
+                <h3>
+                    Completed
+                </h3>
+
+                <div
+                    class="card-number"
+                    id="completedContracts">
+
+                    0
+
+                </div>
+
+                <p>
+                    Successfully completed
+                </p>
+
+            </div>
+
+
+
+            <!-- EXPIRED -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    ⚠️
+                </div>
+
+                <h3>
+                    Expired
+                </h3>
+
+                <div
+                    class="card-number"
+                    id="expiredContracts">
+
+                    0
+
+                </div>
+
+                <p>
+                    Expired contracts
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================= ADD CONTRACT ================= -->
+
+        <div
+            class="section"
+            id="contractFormSection">
+
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Create New Contract
+                    </h2>
+
+                    <p>
+                        Add a new contract to the system.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <form onsubmit="addContract(event)">
+
+
+                <div class="form-grid">
+
+
+                    <!-- CONTRACT TITLE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Contract Title *
+                        </label>
+
+                        <input
+                            id="contractTitle"
+                            type="text"
+                            placeholder="Enter contract title"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- COMPANY -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Company *
+                        </label>
+
+                        <select
+                            id="companyId"
+                            required>
+
+                            <option value="">
+                                Select company
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- CONTRACT TYPE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Contract Type *
+                        </label>
+
+                        <select
+                            id="contractType"
+                            required>
+
+                            <option value="">
+                                Select contract type
+                            </option>
+
+                            <option value="Software Development">
+                                Software Development
+                            </option>
+
+                            <option value="Application Development">
+                                Application Development
+                            </option>
+
+                            <option value="Cloud Services">
+                                Cloud Services
+                            </option>
+
+                            <option value="Infrastructure">
+                                Infrastructure
+                            </option>
+
+                            <option value="Database">
+                                Database
+                            </option>
+
+                            <option value="Security">
+                                Security
+                            </option>
+
+                            <option value="Maintenance">
+                                Maintenance
+                            </option>
+
+                            <option value="Consulting">
+                                Consulting
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- VALUE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Contract Value (₹) *
+                        </label>
+
+                        <input
+                            id="contractValue"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="Enter contract value"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- START DATE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Start Date *
+                        </label>
+
+                        <input
+                            id="startDate"
+                            type="date"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- END DATE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            End Date *
+                        </label>
+
+                        <input
+                            id="endDate"
+                            type="date"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- STATUS -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Status
+                        </label>
+
+                        <select id="status">
+
+                            <option value="ACTIVE">
+                                ACTIVE
+                            </option>
+
+                            <option value="COMPLETED">
+                                COMPLETED
+                            </option>
+
+                            <option value="EXPIRED">
+                                EXPIRED
+                            </option>
+
+                            <option value="CANCELLED">
+                                CANCELLED
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="form-group full">
+
+                        <label>
+                            Description
+                        </label>
+
+                        <textarea
+                            id="description"
+                            rows="4"
+                            placeholder="Enter contract description..."
+                        ></textarea>
+
+                    </div>
+
+
+                </div>
+
+
+                <br>
+
+
+                <button
+                    type="submit"
+                    class="btn">
+
+                    + Create Contract
+
+                </button>
+
+
+            </form>
+
+
+        </div>
+
+
+
+        <!-- ================= CONTRACT LIST ================= -->
+
+        <div class="section">
+
+
+            <div class="section-header">
+
+
+                <div>
+
+                    <h2>
+                        All Contracts
+                    </h2>
+
+                    <p>
+                        View and manage all contracts.
+                    </p>
+
+                </div>
+
+
+                <input
+                    class="search"
+                    id="search"
+                    type="text"
+                    placeholder="Search contracts..."
+                    onkeyup="filterContracts()"
+                >
+
+
+            </div>
+
+
+
+            <div class="table-wrapper">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Contract
+                            </th>
+
+                            <th>
+                                Company
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Start Date
+                            </th>
+
+                            <th>
+                                End Date
+                            </th>
+
+                            <th>
+                                Value
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="contractTable">
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                style="text-align:center; padding:30px;">
+
+                                Loading contracts...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+
+
+<script src="script.js"></script>
+
+
+<script>
+
+
+/* =====================================================
+   PAGE PROTECTION
+===================================================== */
+
+protectPage("MANAGER");
+
+
+
+let contracts = [];
+
+
+
+/* =====================================================
+   SCROLL TO FORM
+===================================================== */
+
+function scrollToForm() {
+
+    document
+        .getElementById("contractFormSection")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
+
+
+
+/* =====================================================
+   LOAD COMPANIES
+===================================================== */
+
+async function loadCompanies() {
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                API + "/companies"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load companies"
+            );
+
+        }
+
+
+        const companies =
+            await response.json();
+
+
+        const select =
+            document.getElementById(
+                "companyId"
+            );
+
+
+        select.innerHTML =
+            `<option value="">
+                Select company
+            </option>`;
+
+
+        companies.forEach(company => {
+
+
+            select.innerHTML += `
+
+                <option value="${company.companyId}">
+
+                    ${company.companyName}
+
+                </option>
+
+            `;
+
+        });
+
+
+    } catch (error) {
+
+
+        console.error(error);
+
+
+        showToast(
+            "Unable to load companies",
+            false
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   LOAD CONTRACTS
+===================================================== */
+
+async function loadContracts() {
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                API + "/contracts"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load contracts"
+            );
+
+        }
+
+
+        contracts =
+            await response.json();
+
+
+        updateStatistics();
+
+        displayContracts(contracts);
+
+
+    } catch (error) {
+
+
+        console.error(error);
+
+
+        document
+            .getElementById("contractTable")
+            .innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="7"
+                        style="text-align:center; padding:30px;">
+
+                        Unable to load contracts.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+        showToast(
+            "Unable to load contracts",
+            false
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   STATISTICS
+===================================================== */
+
+function updateStatistics() {
+
+
+    document
+        .getElementById("totalContracts")
+        .innerText =
+        contracts.length;
+
+
+    const active =
+        contracts.filter(
+            c => c.status === "ACTIVE"
+        ).length;
+
+
+    const completed =
+        contracts.filter(
+            c => c.status === "COMPLETED"
+        ).length;
+
+
+    const expired =
+        contracts.filter(
+            c => c.status === "EXPIRED"
+        ).length;
+
+
+    document
+        .getElementById("activeContracts")
+        .innerText =
+        active;
+
+
+    document
+        .getElementById("completedContracts")
+        .innerText =
+        completed;
+
+
+    document
+        .getElementById("expiredContracts")
+        .innerText =
+        expired;
+
+}
+
+
+
+/* =====================================================
+   DISPLAY CONTRACTS
+===================================================== */
+
+function displayContracts(data) {
+
+
+    const table =
+        document.getElementById(
+            "contractTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+    if (data.length === 0) {
+
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    style="text-align:center; padding:30px;">
+
+                    No contracts found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
+
+
+
+    data.forEach(contract => {
+
+
+        const companyName =
+            contract.company
+                ? contract.company.companyName
+                : "N/A";
+
+
+        table.innerHTML += `
+
+            <tr>
+
+
+                <td>
+
+                    <strong>
+                        ${contract.contractTitle}
+                    </strong>
+
+                    <br>
+
+                    <small>
+                        Contract #${contract.contractId}
+                    </small>
+
+                </td>
+
+
+
+                <td>
+
+                    ${companyName}
+
+                </td>
+
+
+
+                <td>
+
+                    ${contract.contractType || "N/A"}
+
+                </td>
+
+
+
+                <td>
+
+                    ${contract.startDate || "N/A"}
+
+                </td>
+
+
+
+                <td>
+
+                    ${contract.endDate || "N/A"}
+
+                </td>
+
+
+
+                <td>
+
+                    ₹${Number(
+                        contract.contractValue || 0
+                    ).toLocaleString("en-IN")}
+
+                </td>
+
+
+
+                <td>
+
+                    <select
+                        onchange="
+                            changeContractStatus(
+                                ${contract.contractId},
+                                this.value
+                            )
+                        "
+                    >
+
+                        <option
+                            value="ACTIVE"
+                            ${contract.status === "ACTIVE"
+                                ? "selected"
+                                : ""}>
+
+                            ACTIVE
+
+                        </option>
+
+
+                        <option
+                            value="COMPLETED"
+                            ${contract.status === "COMPLETED"
+                                ? "selected"
+                                : ""}>
+
+                            COMPLETED
+
+                        </option>
+
+
+                        <option
+                            value="EXPIRED"
+                            ${contract.status === "EXPIRED"
+                                ? "selected"
+                                : ""}>
+
+                            EXPIRED
+
+                        </option>
+
+
+                        <option
+                            value="CANCELLED"
+                            ${contract.status === "CANCELLED"
+                                ? "selected"
+                                : ""}>
+
+                            CANCELLED
+
+                        </option>
+
+                    </select>
+
+                </td>
+
+
+            </tr>
+
+        `;
+
+    });
+
+}
+
+
+
+/* =====================================================
+   SEARCH CONTRACTS
+===================================================== */
+
+function filterContracts() {
+
+
+    const value =
+        document
+        .getElementById("search")
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const filtered =
+        contracts.filter(contract => {
+
+
+            const title =
+                (
+                    contract.contractTitle || ""
+                ).toLowerCase();
+
+
+            const type =
+                (
+                    contract.contractType || ""
+                ).toLowerCase();
+
+
+            const company =
+                contract.company
+                    ? (
+                        contract.company.companyName || ""
+                    ).toLowerCase()
+                    : "";
+
+
+            return (
+
+                title.includes(value)
+
+                ||
+
+                type.includes(value)
+
+                ||
+
+                company.includes(value)
+
+            );
+
+        });
+
+
+    displayContracts(filtered);
+
+}
+
+
+
+/* =====================================================
+   ADD CONTRACT
+===================================================== */
+
+async function addContract(event) {
+
+
+    event.preventDefault();
+
+
+
+    const contract = {
+
+
+        contractTitle:
+            document
+            .getElementById("contractTitle")
+            .value
+            .trim(),
+
+
+        company: {
+
+            companyId:
+                Number(
+                    document
+                    .getElementById("companyId")
+                    .value
+                )
+
+        },
+
+
+        contractType:
+            document
+            .getElementById("contractType")
+            .value,
+
+
+        startDate:
+            document
+            .getElementById("startDate")
+            .value,
+
+
+        endDate:
+            document
+            .getElementById("endDate")
+            .value,
+
+
+        contractValue:
+            Number(
+                document
+                .getElementById("contractValue")
+                .value
+            ),
+
+
+        status:
+            document
+            .getElementById("status")
+            .value,
+
+
+        description:
+            document
+            .getElementById("description")
+            .value
+            .trim(),
+
+
+        createdBy: {
+
+            userId:
+                Number(
+                    getUserId()
+                )
+
+        }
+
+    };
+
+
+
+    /* Validate dates */
+
+    if (
+        contract.startDate &&
+        contract.endDate &&
+        contract.endDate < contract.startDate
+    ) {
+
+        showToast(
+            "End date cannot be before start date",
+            false
+        );
+
+        return;
+
+    }
+
+
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                API + "/contracts",
+
+                {
+
+                    method: "POST",
+
+                    headers: authHeaders(),
+
+                    body:
+                        JSON.stringify(contract)
+
+                }
+
+            );
+
+
+        if (response.ok) {
+
+
+            showToast(
+                "Contract created successfully"
+            );
+
+
+            event.target.reset();
+
+
+            await loadContracts();
+
+
+        } else {
+
+
+            const message =
+                await response.text();
+
+
+            showToast(
+                message ||
+                "Unable to create contract",
+                false
+            );
+
+        }
+
+
+    } catch (error) {
+
+
+        console.error(error);
+
+
+        showToast(
+            "Server error while creating contract",
+            false
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   CHANGE CONTRACT STATUS
+===================================================== */
+
+async function changeContractStatus(
+    contractId,
+    status
+) {
+
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                API +
+                "/contracts/" +
+                contractId +
+                "/status?status=" +
+                encodeURIComponent(status),
+
+                {
+
+                    method: "PUT",
+
+                    headers: authHeaders()
+
+                }
+
+            );
+
+
+        if (response.ok) {
+
+
+            showToast(
+                "Contract status updated"
+            );
+
+
+            await loadContracts();
+
+
+        } else {
+
+
+            const message =
+                await response.text();
+
+
+            showToast(
+                message ||
+                "Unable to update contract",
+                false
+            );
+
+
+            await loadContracts();
+
+        }
+
+
+    } catch (error) {
+
+
+        console.error(error);
+
+
+        showToast(
+            "Server error while updating contract",
+            false
+        );
+
+
+        await loadContracts();
+
+    }
+
+}
+
+
+
+/* =====================================================
+   INITIAL LOAD
+===================================================== */
+
+loadCompanies();
+
+loadContracts();
+
+
+</script>
+
+
+</body>
+
+</html>

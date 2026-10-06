@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Assign Employees</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        .header {
+            background-color: #1f2937;
+            color: white;
+            padding: 20px 40px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .container {
+            padding: 35px 40px;
+        }
+
+        .back-button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            background-color: #374151;
+            color: white;
+            cursor: pointer;
+            margin-bottom: 25px;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            max-width: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .assign-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2563eb;
+            color: white;
+            cursor: pointer;
+        }
+
+        .assign-button:hover {
+            background-color: #1d4ed8;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="header">
+
+        <h1>Assign Employees</h1>
+
+    </div>
+
+
+    <div class="container">
+
+        <button
+            class="back-button"
+            onclick="goBack()">
+
+            ← Back to Dashboard
+
+        </button>
+
+
+        <div class="form-container">
+
+            <h2>Assign Employee to Contract</h2>
+
+
+            <form id="assignmentForm">
+
+
+                <!-- Contract -->
+
+                <div class="form-group">
+
+                    <label>
+                        Select Contract
+                    </label>
+
+                    <select
+                        id="contractId"
+                        required>
+
+                        <option value="">
+                            Loading contracts...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Employee -->
+
+                <div class="form-group">
+
+                    <label>
+                        Select Employee
+                    </label>
+
+                    <select
+                        id="employeeId"
+                        required>
+
+                        <option value="">
+                            Loading employees...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Employee Role -->
+
+                <div class="form-group">
+
+                    <label>
+                        Employee Role
+                    </label>
+
+                    <input
+                        type="text"
+                        id="employeeRole"
+                        placeholder="Example: Backend Developer"
+                        required>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="assign-button">
+
+                    Assign Employee
+
+                </button>
+
+
+                <p id="message"></p>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+<script>
+
+    // Load contracts
+
+    async function loadContracts() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://localhost:8080/api/contracts"
+                );
+
+            const contracts =
+                await response.json();
+
+            const select =
+                document.getElementById(
+                    "contractId"
+                );
+
+            select.innerHTML =
+                '<option value="">Select Contract</option>';
+
+
+            contracts.forEach(contract => {
+
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    contract.contractId;
+
+                option.textContent =
+                    contract.contractTitle;
+
+                select.appendChild(option);
+
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+        }
+
+    }
+
+
+    // Load employees
+
+    async function loadEmployees() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://localhost:8080/api/users/employees"
+                );
+
+            const employees =
+                await response.json();
+
+            const select =
+                document.getElementById(
+                    "employeeId"
+                );
+
+            select.innerHTML =
+                '<option value="">Select Employee</option>';
+
+
+            employees.forEach(employee => {
+
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    employee.userId;
+
+                option.textContent =
+                    employee.name;
+
+                select.appendChild(option);
+
+            });
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+        }
+
+    }
+
+
+    // Assign employee
+
+    document.getElementById(
+        "assignmentForm"
+    ).addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            const contractId =
+                Number(
+                    document.getElementById(
+                        "contractId"
+                    ).value
+                );
+
+
+            const employeeId =
+                Number(
+                    document.getElementById(
+                        "employeeId"
+                    ).value
+                );
+
+
+            const employeeRole =
+                document.getElementById(
+                    "employeeRole"
+                ).value;
+
+
+            const assignmentData = {
+
+                contract: {
+                    contractId: contractId
+                },
+
+                employee: {
+                    userId: employeeId
+                },
+
+                employeeRole: employeeRole
+
+            };
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "http://localhost:8080/api/assignments",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    assignmentData
+                                )
+
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Assignment failed"
+                    );
+
+                }
+
+
+                document.getElementById(
+                    "message"
+                ).textContent =
+                    "Employee assigned successfully!";
+
+
+                document.getElementById(
+                    "assignmentForm"
+                ).reset();
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                document.getElementById(
+                    "message"
+                ).textContent =
+                    "Unable to assign employee.";
+
+            }
+
+        }
+    );
+
+
+    function goBack() {
+
+        window.location.href =
+            "manager-dashboard.html";
+
+    }
+
+
+    // Load data
+
+    loadContracts();
+
+    loadEmployees();
+
+</script>
+
+</body>
+
+</html>

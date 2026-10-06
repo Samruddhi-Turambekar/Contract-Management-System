@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Employee Dashboard | ContractPro</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="layout">
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            Contract<span>Pro</span>
+        </div>
+
+
+        <div class="nav">
+
+            <a class="active" href="employee-dashboard.html">
+                📊 Dashboard
+            </a>
+
+            <a href="employee-tasks.html">
+                ✅ My Tasks
+            </a>
+
+            <a href="#" onclick="logout()" class="logout">
+                🚪 Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div>
+
+                <h1>
+                    My Dashboard
+                </h1>
+
+                <p>
+                    Welcome back! Here's your current workload.
+                </p>
+
+            </div>
+
+
+            <div class="user-welcome">
+
+                👤 <span id="userName">
+                    Employee
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================= SUMMARY CARDS ================= -->
+
+        <div class="cards">
+
+
+            <!-- MY TASKS -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    📋
+                </div>
+
+                <h3>
+                    My Tasks
+                </h3>
+
+                <div
+                    class="card-number"
+                    id="totalTasks">
+
+                    0
+
+                </div>
+
+                <p>
+                    Assigned to you
+                </p>
+
+            </div>
+
+
+
+            <!-- PENDING -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🕐
+                </div>
+
+                <h3>
+                    Pending
+                </h3>
+
+                <div
+                    class="card-number"
+                    id="pendingTasks">
+
+                    0
+
+                </div>
+
+                <p>
+                    Tasks waiting to start
+                </p>
+
+            </div>
+
+
+
+            <!-- IN PROGRESS -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🔄
+                </div>
+
+                <h3>
+                    In Progress
+                </h3>
+
+                <div
+                    class="card-number"
+                    id="progressTasks">
+
+                    0
+
+                </div>
+
+                <p>
+                    Currently working
+                </p>
+
+            </div>
+
+
+
+            <!-- COMPLETED -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    ✅
+                </div>
+
+                <h3>
+                    Completed
+                </h3>
+
+                <div
+                    class="card-number"
+                    id="completedTasks">
+
+                    0
+
+                </div>
+
+                <p>
+                    Manager approved
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================= MY WORK ================= -->
+
+        <div class="section">
+
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        My Work
+                    </h2>
+
+                    <p>
+                        View your assigned tasks and update your progress.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="btn"
+                    onclick="openMyTasks()">
+
+                    View My Tasks
+
+                </button>
+
+            </div>
+
+
+
+            <div style="
+                padding: 20px 0;
+                line-height: 1.8;
+            ">
+
+                <p>
+
+                    You can start your assigned tasks and move them
+                    from <strong>PENDING</strong> to
+                    <strong>IN PROGRESS</strong>.
+
+                </p>
+
+
+                <p>
+
+                    Once your work is finished, your manager will
+                    review it and mark the task as
+                    <strong>COMPLETED</strong>.
+
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+
+    </main>
+
+
+</div>
+
+
+
+<script src="script.js"></script>
+
+
+<script>
+
+
+/* =====================================================
+   PAGE PROTECTION
+===================================================== */
+
+protectPage("EMPLOYEE");
+
+
+
+/* =====================================================
+   SHOW EMPLOYEE NAME
+===================================================== */
+
+document
+    .getElementById("userName")
+    .innerText =
+    getUserName();
+
+
+
+/* =====================================================
+   OPEN MY TASKS
+===================================================== */
+
+function openMyTasks() {
+
+    window.location.href =
+        "employee-tasks.html";
+
+}
+
+
+
+/* =====================================================
+   LOAD EMPLOYEE TASKS
+===================================================== */
+
+async function loadDashboardTasks() {
+
+
+    try {
+
+
+        const userId =
+            getUserId();
+
+
+        if (!userId) {
+
+            return;
+
+        }
+
+
+        const response =
+            await fetch(
+                API +
+                "/tasks/employee/" +
+                userId
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load tasks"
+            );
+
+        }
+
+
+        const tasks =
+            await response.json();
+
+
+
+        /* TOTAL */
+
+        document
+            .getElementById("totalTasks")
+            .innerText =
+            tasks.length;
+
+
+
+        /* PENDING */
+
+        const pending =
+            tasks.filter(
+                task =>
+                    task.status === "PENDING"
+            ).length;
+
+
+        document
+            .getElementById("pendingTasks")
+            .innerText =
+            pending;
+
+
+
+        /* IN PROGRESS */
+
+        const progress =
+            tasks.filter(
+                task =>
+                    task.status === "IN PROGRESS"
+            ).length;
+
+
+        document
+            .getElementById("progressTasks")
+            .innerText =
+            progress;
+
+
+
+        /* COMPLETED */
+
+        const completed =
+            tasks.filter(
+                task =>
+                    task.status === "COMPLETED"
+            ).length;
+
+
+        document
+            .getElementById("completedTasks")
+            .innerText =
+            completed;
+
+
+    } catch (error) {
+
+
+        console.error(
+            "Dashboard error:",
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   INITIAL LOAD
+===================================================== */
+
+loadDashboardTasks();
+
+
+</script>
+
+
+</body>
+
+</html>

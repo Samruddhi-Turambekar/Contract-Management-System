@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Companies</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+<aside class="sidebar">
+
+<div class="brand">
+    Contract<span>Pro</span>
+</div>
+
+<div class="nav">
+
+<a href="manager-dashboard.html">📊 Dashboard</a>
+
+<a class="active" href="companies.html">🏢 Companies</a>
+
+<a href="contracts.html">📄 Contracts</a>
+
+<a href="employees.html">👥 Employees</a>
+
+<a href="assign-employees.html">🔗 Assign Employees</a>
+
+<a href="tasks.html">✅ Tasks</a>
+
+<a href="#" onclick="logout()" class="logout">🚪 Logout</a>
+
+</div>
+
+</aside>
+
+<main class="main">
+
+<div class="topbar">
+
+<div>
+<h1>Companies</h1>
+<p>Manage your business clients and partners.</p>
+</div>
+
+<button class="btn" onclick="showForm()">
++ Add Company
+</button>
+
+</div>
+
+<div class="section" id="companyForm" style="display:none">
+
+<h2>Add New Company</h2>
+
+<form onsubmit="addCompany(event)">
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Company Name *</label>
+<input id="companyName" required>
+</div>
+
+<div class="form-group">
+<label>Contact Person *</label>
+<input id="contactPerson" required>
+</div>
+
+<div class="form-group">
+<label>Email</label>
+<input id="email" type="email">
+</div>
+
+<div class="form-group">
+<label>Phone</label>
+<input id="phone">
+</div>
+
+<div class="form-group full">
+<label>Address</label>
+<input id="address">
+</div>
+
+</div>
+
+<br>
+
+<button class="btn" type="submit">Save Company</button>
+
+<button type="button"
+        class="btn btn-secondary"
+        onclick="hideForm()">
+Cancel
+</button>
+
+</form>
+
+</div>
+
+<div class="section">
+
+<div class="section-header">
+
+<h2>Company Directory</h2>
+
+<input class="search"
+       id="search"
+       placeholder="Search companies..."
+       onkeyup="filterCompanies()">
+
+</div>
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+<th>ID</th>
+<th>Company</th>
+<th>Contact</th>
+<th>Email</th>
+<th>Phone</th>
+<th>Address</th>
+</tr>
+
+</thead>
+
+<tbody id="companyTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+
+protectPage("MANAGER");
+
+let companies = [];
+
+function showForm() {
+    document.getElementById("companyForm").style.display = "block";
+}
+
+function hideForm() {
+    document.getElementById("companyForm").style.display = "none";
+}
+
+async function loadCompanies() {
+
+    const response =
+        await fetch(API + "/companies");
+
+    companies = await response.json();
+
+    displayCompanies(companies);
+}
+
+function displayCompanies(data) {
+
+    const table =
+        document.getElementById("companyTable");
+
+    table.innerHTML = "";
+
+    if (data.length === 0) {
+
+        table.innerHTML =
+            `<tr>
+                <td colspan="6" class="empty">
+                    No companies found.
+                </td>
+             </tr>`;
+
+        return;
+    }
+
+    data.forEach(c => {
+
+        table.innerHTML += `
+
+        <tr>
+
+            <td>${c.companyId}</td>
+
+            <td><strong>${c.companyName}</strong></td>
+
+            <td>${c.contactPerson}</td>
+
+            <td>${c.email || "-"}</td>
+
+            <td>${c.phone || "-"}</td>
+
+            <td>${c.address || "-"}</td>
+
+        </tr>
+
+        `;
+    });
+}
+
+function filterCompanies() {
+
+    const value =
+        document.getElementById("search").value.toLowerCase();
+
+    displayCompanies(
+        companies.filter(c =>
+            c.companyName.toLowerCase().includes(value)
+            ||
+            c.contactPerson.toLowerCase().includes(value)
+        )
+    );
+}
+
+async function addCompany(event) {
+
+    event.preventDefault();
+
+    const company = {
+
+        companyName:
+            document.getElementById("companyName").value,
+
+        contactPerson:
+            document.getElementById("contactPerson").value,
+
+        email:
+            document.getElementById("email").value,
+
+        phone:
+            document.getElementById("phone").value,
+
+        address:
+            document.getElementById("address").value
+    };
+
+    const response = await fetch(
+        API + "/companies",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(company)
+        }
+    );
+
+    if (response.ok) {
+
+        showToast("Company added successfully");
+
+        event.target.reset();
+
+        hideForm();
+
+        loadCompanies();
+
+    } else {
+
+        showToast("Unable to add company", false);
+    }
+}
+
+loadCompanies();
+
+</script>
+
+</body>
+</html>
