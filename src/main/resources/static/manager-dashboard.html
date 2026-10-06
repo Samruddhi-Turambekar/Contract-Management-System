@@ -1,184 +1,344 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Manager Dashboard</title>
+
     <link rel="stylesheet" href="style.css">
+
+    <!-- Load script.js BEFORE using protectPage() -->
+    <script src="script.js"></script>
+
 </head>
 
 <body>
 
+<!-- Manager Page Protection -->
 <script>
-if (!protectPage || localStorage.getItem("userRole") !== "MANAGER") {
-    window.location.href = "login.html";
-}
+    protectPage("MANAGER");
 </script>
+
 
 <div class="layout">
 
-<aside class="sidebar">
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
 
-    <div class="brand">
-        Contract<span>Pro</span>
-    </div>
+    <aside class="sidebar">
 
-    <div class="nav-title">Management</div>
-
-    <div class="nav">
-
-        <a class="active" href="manager-dashboard.html">
-            📊 Dashboard
-        </a>
-
-        <a href="companies.html">
-            🏢 Companies
-        </a>
-
-        <a href="contracts.html">
-            📄 Contracts
-        </a>
-
-        <a href="employees.html">
-            👥 Employees
-        </a>
-
-        <a href="assign-employees.html">
-            🔗 Assign Employees
-        </a>
-
-        <a href="tasks.html">
-            ✅ Tasks
-        </a>
-
-        <a href="#" onclick="logout()" class="logout">
-            🚪 Logout
-        </a>
-
-    </div>
-
-</aside>
-
-<main class="main">
-
-<div class="topbar">
-
-    <div>
-        <h1>Manager Dashboard</h1>
-        <p>Monitor your contracts, employees and tasks.</p>
-    </div>
-
-    <div class="user-box">
-        👤 <span id="managerName"></span>
-    </div>
-
-</div>
-
-<div class="cards">
-
-    <div class="card">
-        <div class="label">Companies</div>
-        <div class="number" id="companyCount">0</div>
-    </div>
-
-    <div class="card">
-        <div class="label">Contracts</div>
-        <div class="number" id="contractCount">0</div>
-    </div>
-
-    <div class="card">
-        <div class="label">Pending Tasks</div>
-        <div class="number" id="pendingCount">0</div>
-    </div>
-
-    <div class="card">
-        <div class="label">Completed Tasks</div>
-        <div class="number" id="completedCount">0</div>
-    </div>
-
-</div>
-
-<div class="section">
-
-    <div class="section-header">
-        <h2>Task Overview</h2>
-        <a class="btn" href="tasks.html">Manage Tasks</a>
-    </div>
-
-    <div class="cards">
-
-        <div class="card">
-            <div class="label">In Progress</div>
-            <div class="number" id="progressCount">0</div>
+        <div class="brand">
+            Contract<span>Pro</span>
         </div>
 
-        <div class="card">
-            <div class="label">Active Contracts</div>
-            <div class="number" id="activeContracts">0</div>
+        <div class="nav-title">
+            Management
         </div>
 
-    </div>
+        <div class="nav">
+
+            <a class="active" href="manager-dashboard.html">
+                📊 Dashboard
+            </a>
+
+            <a href="companies.html">
+                🏢 Companies
+            </a>
+
+            <a href="contracts.html">
+                📄 Contracts
+            </a>
+
+            <a href="employees.html">
+                👥 Employees
+            </a>
+
+            <a href="assign-employees.html">
+                🔗 Assign Employees
+            </a>
+
+            <a href="tasks.html">
+                ✅ Tasks
+            </a>
+
+            <a href="#" onclick="logout()" class="logout">
+                🚪 Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main">
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div>
+
+                <h1>
+                    Manager Dashboard
+                </h1>
+
+                <p>
+                    Monitor your contracts, employees and tasks.
+                </p>
+
+            </div>
+
+            <div class="user-box">
+
+                👤
+                <span id="managerName"></span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             MAIN CARDS
+        ========================== -->
+
+        <div class="cards">
+
+            <div class="card">
+
+                <div class="label">
+                    Companies
+                </div>
+
+                <div class="number" id="companyCount">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="label">
+                    Contracts
+                </div>
+
+                <div class="number" id="contractCount">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="label">
+                    Pending Tasks
+                </div>
+
+                <div class="number" id="pendingCount">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="label">
+                    Completed Tasks
+                </div>
+
+                <div class="number" id="completedCount">
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             TASK OVERVIEW
+        ========================== -->
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <h2>
+                    Task Overview
+                </h2>
+
+                <a class="btn" href="tasks.html">
+                    Manage Tasks
+                </a>
+
+            </div>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="label">
+                        In Progress
+                    </div>
+
+                    <div class="number" id="progressCount">
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="label">
+                        Active Contracts
+                    </div>
+
+                    <div class="number" id="activeContracts">
+                        0
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             QUICK ACTIONS
+        ========================== -->
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <h2>
+                    Quick Actions
+                </h2>
+
+            </div>
+
+
+            <a href="companies.html" class="btn">
+                + Add Company
+            </a>
+
+            <a href="contracts.html" class="btn">
+                + Add Contract
+            </a>
+
+            <a href="tasks.html" class="btn">
+                + Create Task
+            </a>
+
+        </div>
+
+    </main>
 
 </div>
 
-<div class="section">
 
-    <div class="section-header">
-        <h2>Quick Actions</h2>
-    </div>
-
-    <a href="companies.html" class="btn">+ Add Company</a>
-    <a href="contracts.html" class="btn">+ Add Contract</a>
-    <a href="tasks.html" class="btn">+ Create Task</a>
-
-</div>
-
-</main>
-</div>
-
-<script src="script.js"></script>
+<!-- =========================
+     DASHBOARD JAVASCRIPT
+========================== -->
 
 <script>
 
 document.getElementById("managerName").innerText = getUserName();
 
+
 async function loadDashboard() {
 
     try {
 
-        const [companies, contracts, tasks] = await Promise.all([
-            fetch(API + "/companies").then(r => r.json()),
-            fetch(API + "/contracts").then(r => r.json()),
-            fetch(API + "/tasks").then(r => r.json())
-        ]);
+        const [companies, contracts, tasks] =
+            await Promise.all([
 
-        document.getElementById("companyCount").innerText = companies.length;
+                fetch(API + "/companies")
+                    .then(response => response.json()),
+
+                fetch(API + "/contracts")
+                    .then(response => response.json()),
+
+                fetch(API + "/tasks")
+                    .then(response => response.json())
+
+            ]);
+
+
+        // Company count
+
+        document.getElementById("companyCount").innerText =
+            companies.length;
+
+
+        // Contract count
 
         document.getElementById("contractCount").innerText =
             contracts.length;
 
+
+        // Pending tasks
+
         document.getElementById("pendingCount").innerText =
-            tasks.filter(t => t.status === "PENDING").length;
+            tasks.filter(task =>
+                task.status === "PENDING"
+            ).length;
+
+
+        // In-progress tasks
 
         document.getElementById("progressCount").innerText =
-            tasks.filter(t => t.status === "IN PROGRESS").length;
+            tasks.filter(task =>
+                task.status === "IN PROGRESS"
+            ).length;
+
+
+        // Completed tasks
 
         document.getElementById("completedCount").innerText =
-            tasks.filter(t => t.status === "COMPLETED").length;
+            tasks.filter(task =>
+                task.status === "COMPLETED"
+            ).length;
+
+
+        // Active contracts
 
         document.getElementById("activeContracts").innerText =
-            contracts.filter(c => c.status === "ACTIVE").length;
+            contracts.filter(contract =>
+                contract.status === "ACTIVE"
+            ).length;
 
-    } catch(error) {
 
-        console.error(error);
+    } catch (error) {
+
+        console.error(
+            "Error loading dashboard:",
+            error
+        );
 
     }
+
 }
+
 
 loadDashboard();
 
 </script>
 
 </body>
+
 </html>
